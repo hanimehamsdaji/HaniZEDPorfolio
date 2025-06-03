@@ -623,14 +623,12 @@
     .gallery-container {
       max-width: 1400px;
       margin: 0 auto;
-    }
-
-    .gallery {
+    }    .gallery {
       display: grid;
       gap: 30px;
       margin-bottom: 80px;
-      opacity: 0;
-      transform: translateY(50px);
+      opacity: 1; /* Toujours visible */
+      transform: translateY(0); /* Position normale */
       transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -645,9 +643,7 @@
 
     .gallery.portrait {
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-
-    .gallery-item {
+    }    .gallery-item {
       position: relative;
       overflow: hidden;
       border-radius: 25px;
@@ -656,6 +652,8 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      opacity: 1; /* Assurer que les items sont visibles par défaut */
+      transform: translateY(0); /* Position normale par défaut */
     }
 
     .gallery-item::before {
@@ -1406,9 +1404,7 @@
         particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
         particles.appendChild(particle);
       }
-    }
-
-    // Enhanced Intersection Observer
+    }    // Enhanced Intersection Observer
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
@@ -1418,14 +1414,29 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          
+          // Special handling for gallery items
+          if (entry.target.classList.contains('gallery')) {
+            const items = entry.target.querySelectorAll('.gallery-item');
+            items.forEach((item, index) => {
+              setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+              }, index * 100);
+            });
+          }
         }
       });
-    }, observerOptions);
-
-    // Initialize animations
+    }, observerOptions);// Initialize animations
     document.addEventListener('DOMContentLoaded', () => {
       const animatedElements = document.querySelectorAll('h2, .about p, .skill-tag, .gallery');
       animatedElements.forEach(el => observer.observe(el));
+      
+      // Force gallery visibility immediately for debugging
+      const galleries = document.querySelectorAll('.gallery');
+      galleries.forEach(gallery => {
+        gallery.classList.add('visible');
+      });
       
       // Staggered animations
       const skillTags = document.querySelectorAll('.skill-tag');
